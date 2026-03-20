@@ -3,7 +3,7 @@ from data_processing import load_data, transform_data
 
 st.title("Virtual Server Monitoring Dashboard")
 
-file_path = file_path = "server_data.xlsx"
+file_path =  "server_data.xlsx"
 
 # load data
 metadata, s1, s2 = load_data(file_path)
