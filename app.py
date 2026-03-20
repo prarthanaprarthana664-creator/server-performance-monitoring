@@ -1,27 +1,27 @@
+import pandas as pd
 import streamlit as st
-from data_processing import load_data, transform_data
 
 st.title("Virtual Server Monitoring Dashboard")
 
-file_path =  "server_data.xlsx"
+# safe file loading
+try:
+    file_path = "server_data.xlsx"
+    metadata = pd.read_excel(file_path, sheet_name="Server_Metadata", engine="openpyxl")
+    s1 = pd.read_excel(file_path, sheet_name="Server_Performance_Station1", engine="openpyxl")
+    s2 = pd.read_excel(file_path, sheet_name="Server_Performance_Station2", engine="openpyxl")
 
-# load data
-metadata, s1, s2 = load_data(file_path)
+    df = pd.concat([s1, s2])
 
-# transform data
-server_data = transform_data(metadata, s1, s2)
+    st.subheader("Dataset Preview")
+    st.write(df.head())
 
-# show data
-st.subheader("Dataset Preview")
-st.write(server_data.head())
+    st.subheader("CPU Utilization Trend")
+    st.line_chart(df["CPU_Utilization (%)"])
 
-# CPU graph
-st.subheader("CPU Utilization Trend")
-st.line_chart(server_data["CPU_Utilization (%)"])
+    st.subheader("Memory Usage Trend")
+    st.line_chart(df["Memory_Usage (%)"])
 
-# Memory graph
-st.subheader("Memory Usage Trend")
-st.line_chart(server_data["Memory_Usage (%)"])
+    st.metric("Average CPU Usage", round(df["CPU_Utilization (%)"].mean(), 2))
 
-# KPI
-st.metric("Average CPU Usage", round(server_data["CPU_Utilization (%)"].mean(), 2))
+except Exception as e:
+    st.error(f"Error loading file: {e}")
